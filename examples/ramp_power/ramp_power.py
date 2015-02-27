@@ -24,12 +24,22 @@ power.add_data_point(4, 12.0, 100.0)
 power.add_data_point(5, 20.0, 100.0)
 print(power)
 
-# set up solver
-solver = pkes.IPKESolver()
-solver.material = mat
-solver.end_times = [20.0]
-solver.num_time_steps = [2000]
-solver.power = power
+# set up inverse kinetics solver
+ipke_solver = pkes.IPKESolver()
+ipke_solver.material = mat
+ipke_solver.end_times = [20.0]
+ipke_solver.num_time_steps = [20000]
+ipke_solver.power = power
 
-# solve problem
-solver.solve()
+# solve inverse kinetics
+ipke_solver.solve()
+
+# set up point kinetics solver
+pke_solver = pkes.PKESolver()
+pke_solver.material = mat
+pke_solver.end_times = [20.0]
+pke_solver.num_time_steps = [20000]
+pke_solver.reactivity = ipke_solver.reactivity
+
+# solve point kinetics
+pke_solver.solve()
