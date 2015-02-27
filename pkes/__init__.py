@@ -1,3 +1,3 @@
 from material import Material
 from solution import Solution
-from solver import PKESolver
+from pke_solver import PKESolver
