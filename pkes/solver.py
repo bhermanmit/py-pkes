@@ -149,11 +149,16 @@ class PKESolver(object):
         # record initial power in vector
         self.power.add_data_point(0, 0.0, y0[0])
 
+        # open output file
+        fh = open("output.dat", "w")
+
         # perform integration
         for i in range(self.num_time_steps):
             self._ode.integrate(self._ode.t+self.time_step)
             self.power.add_data_point(i+1, self._ode.t, self._ode.y[0])
             print("{0} {1}".format(self._ode.t, self._ode.y[0]))
+            fh.write("{0} {1}\n".format(self._ode.t, self._ode.y[0]))
+        fh.close()
 
         #######################################################################
 
