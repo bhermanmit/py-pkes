@@ -137,10 +137,23 @@ class PKESolver(object):
 
         # calculate steady state
         y0 = self._steady_state()
-        print(y0)
+
         # set up ode integrator
         self._ode = ode(_f, _jac).\
                     set_integrator('vode', method='bdf', with_jacobian=True)
+        self._ode.set_initial_value(y0)
+        self._ode.set_f_params(self.material, self.reactivity)
+        self._ode.set_jac_params(self.material, self.reactivity)
+        self._ode.set_integrator("vode", order=1, max_step=self.time_step)
+
+        # record initial power in vector
+        self.power.add_data_point(0, 0.0, y0[0])
+
+        # perform integration
+        for i in range(self.num_time_steps):
+            self._ode.integrate(self._ode.t+self.time_step)
+            self.power.add_data_point(i+1, self._ode.t, self._ode.y[0])
+            print("{0} {1}".format(self._ode.t, self._ode.y[0]))
 
         #######################################################################
 
@@ -170,7 +183,7 @@ class PKESolver(object):
         self._time_step = self.end_time / float(self.num_time_steps)
 
         # allocate power vector
-        self._power = pkes.Solution(self.num_time_steps)
+        self._power = pkes.Solution(self.num_time_steps + 1)
 
         #######################################################################
 
@@ -186,20 +199,58 @@ class PKESolver(object):
         for i in range(self.material.num_precs):
 
             # calculate steady state precs
-            y0[i+1] = self.material.decay[i] * self.material.beta[i] * \
-                      self.initial_power / self.material.pnl
+            y0[i+1] = self.material.beta[i] * self.initial_power / \
+                      (self.material.decay[i] * self.material.pnl)
 
         return y0
+    ##
 
     ###########################################################################
 
 # Function routine
-def _f(self, time, y):
-    pass
+def _f(time, y, material, reactivity):
+
+    # get reactivity
+    rho = reactivity.interpolate(time)
+
+    # allocate vector
+    f = np.zeros((material.num_precs + 1))
+
+    # calculate power row
+    f[0] = (rho - material.beta_total) / material.pnl * y[0] + \
+           np.sum(material.decay * y[1:material.num_precs+1])
+
+    # calculate precursors
+    for i in range(material.num_precs):
+        f[i+1] = -material.decay[i]*y[i+1] + material.beta[i]*y[0] /\
+                  material.pnl
+
+    return f
 
     ###########################################################################
 
 # Jacobian routine
-def _jac(self, time, y):
-    pass
-    ##
+def _jac(time, y, material, reactivity):
+
+    # get reactivity
+    rho = reactivity.interpolate(time)
+
+    # allocate matrix
+    jac = np.zeros((material.num_precs + 1, material.num_precs + 1))
+
+    # set power element
+    jac[0,0] = (rho - material.beta_total) / material.pnl
+
+    # loop around precursors
+    for i in range(material.num_precs):
+
+        # calculate power row
+        jac[0,i+1] = material.decay[i]
+
+        # calculate diagonal
+        jac[i+1,i+1] = -material.decay[i]
+
+        # calculate first column
+        jac[i+1,0] = material.beta[i] / material.pnl
+
+    return jac

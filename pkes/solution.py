@@ -89,7 +89,7 @@ class Solution(object):
 
         # check if out of bounds
         if time < self.time[0] or time > self.time[-1]:
-            raise IndexError("Time is out of bounds.")
+            raise IndexError("Time is out of bounds: {0}.".format(time))
 
         # perform interpolation
         return np.interp(time, self.time, self.data)

@@ -17,7 +17,7 @@ print(mat)
 # set up reactivity trace
 reactivity = pkes.Solution(2)
 reactivity.add_data_point(0, 0.0, 0.0)
-reactivity.add_data_point(1, 1.0, 0.0)
+reactivity.add_data_point(1, 1.1, 0.0)
 print(reactivity)
 
 # set up solver
