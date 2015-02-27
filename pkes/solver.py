@@ -18,8 +18,7 @@ class PKESolver(object):
         # initialize private class members
         self._material = None
         self._reactivity = None
-        self._end_time = None
-        self._time_step = None
+        self._end_times = None
         self._ode = None
         self._power = None
         self._num_time_steps = None
@@ -63,26 +62,19 @@ class PKESolver(object):
 
         #######################################################################
 
-    def get_end_time(self):
-        return self._end_time
+    def get_end_times(self):
+        return self._end_times
 
-    def set_end_time(self, end_time):
+    def set_end_times(self, end_times):
 
-        # check end time type
-        if not isinstance(end_time, float):
-            raise TypeError("End time is not a float.")
+        # check end times type
+        if not isinstance(end_times, (list, np.ndarray)):
+            raise TypeError("End times is not an array.")
 
-        # set end time
-        self._end_time = end_time
+        # set end times
+        self._end_times = end_times
 
-    end_time = property(get_end_time, set_end_time)
-
-        #######################################################################
-
-    def get_time_step(self):
-        return self._time_step
-
-    time_step = property(get_time_step)
+    end_times = property(get_end_times, set_end_times)
 
         #######################################################################
 
@@ -98,9 +90,9 @@ class PKESolver(object):
 
     def set_num_time_steps(self, num_time_steps):
 
-        # check num_time_steps is an integer
-        if not isinstance(num_time_steps, int):
-            raise TypeError("Number of time steps not an integer.")
+        # check num_time_steps
+        if not isinstance(num_time_steps, (list, np.ndarray)):
+            raise TypeError("Number of time steps not an array.")
 
         # set number of time steps
         self._num_time_steps = num_time_steps
@@ -146,12 +138,20 @@ class PKESolver(object):
         # open output file
         fh = open("output.dat", "w")
 
-        # perform integration
+        # set up initial time step
         time = 0.0
-        for i in range(self.num_time_steps):
+        t_idx = 0
+        t_cmp = self.num_time_steps[t_idx]
+        dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
 
-            # calculate time step
-            dt = self.end_time / float(self.num_time_steps)
+        # perform integration
+        for i in range(np.sum(self.num_time_steps)):
+
+            # check coarse time index
+            if i == t_cmp:
+                t_idx += 1
+                t_cmp = self.num_time_steps[t_idx]
+                dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
 
             # calculate time
             time += dt
@@ -190,8 +190,8 @@ class PKESolver(object):
             raise ValueError("Reactivity not set in PKESolver.")
 
         # end time
-        if self.end_time is None:
-            raise ValueError("End time not set in PKESolver.")
+        if self.end_times is None:
+            raise ValueError("End times not set in PKESolver.")
 
         # number of time steps
         if self.num_time_steps is None:
@@ -201,11 +201,8 @@ class PKESolver(object):
 
     def _allocate(self):
 
-        # calculate time step
-        self._time_step = self.end_time / float(self.num_time_steps)
-
         # allocate power vector
-        self._power = pkes.Solution(self.num_time_steps + 1)
+        self._power = pkes.Solution(np.sum(self.num_time_steps) + 1)
 
         # coefficient matrix
         self._matrix = np.zeros((self.material.num_precs+1,
