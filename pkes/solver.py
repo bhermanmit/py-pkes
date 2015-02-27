@@ -24,6 +24,8 @@ class PKESolver(object):
         self._power = None
         self._num_time_steps = None
         self._initial_power = 1.0
+        self._matrix = None
+        self._b = None
 
     ###########################################################################
     ## Properties
@@ -136,28 +138,43 @@ class PKESolver(object):
         self._allocate()
 
         # calculate steady state
-        y0 = self._steady_state()
-
-        # set up ode integrator
-        self._ode = ode(_f, _jac).\
-                    set_integrator('vode', method='bdf', with_jacobian=True)
-        self._ode.set_initial_value(y0)
-        self._ode.set_f_params(self.material, self.reactivity)
-        self._ode.set_jac_params(self.material, self.reactivity)
-        self._ode.set_integrator("vode", order=1, max_step=self.time_step)
+        x = self._steady_state()
 
         # record initial power in vector
-        self.power.add_data_point(0, 0.0, y0[0])
+        self.power.add_data_point(0, 0.0, x[0])
 
         # open output file
         fh = open("output.dat", "w")
 
         # perform integration
+        time = 0.0
         for i in range(self.num_time_steps):
-            self._ode.integrate(self._ode.t+self.time_step)
-            self.power.add_data_point(i+1, self._ode.t, self._ode.y[0])
-            print("{0} {1}".format(self._ode.t, self._ode.y[0]))
-            fh.write("{0} {1}\n".format(self._ode.t, self._ode.y[0]))
+
+            # calculate time step
+            dt = self.end_time / float(self.num_time_steps)
+
+            # calculate time
+            time += dt
+
+            # get reactivity at this time
+            rho = self.reactivity.interpolate(time)
+
+            # create coefficient matrix
+            self._create_matrix(dt, rho)
+
+            # set up rhs
+            self._rhs(dt, x)
+
+            # solve matrix
+            x = np.linalg.solve(self._matrix, self._b)
+
+            # extract power
+            self.power.add_data_point(i+1, time, x[0])
+
+            # print to screen and write to file
+            fh.write("{0} {1}\n".format(time, x[0]))
+            print("{0} {1}".format(time, x[0]))
+
         fh.close()
 
         #######################################################################
@@ -190,72 +207,61 @@ class PKESolver(object):
         # allocate power vector
         self._power = pkes.Solution(self.num_time_steps + 1)
 
+        # coefficient matrix
+        self._matrix = np.zeros((self.material.num_precs+1,
+                                 self.material.num_precs+1))
+
+        # right hand side vector
+        self._b = np.zeros((self.material.num_precs+1))
+
         #######################################################################
 
     def _steady_state(self):
 
         # allocate numpy vector
-        y0 = np.zeros((self.material.num_precs + 1))
+        x = np.zeros((self.material.num_precs + 1))
 
         # fill in the initial power
-        y0[0] = self.initial_power
+        x[0] = self.initial_power
 
         # loop around precursors
         for i in range(self.material.num_precs):
 
             # calculate steady state precs
-            y0[i+1] = self.material.beta[i] * self.initial_power / \
-                      (self.material.decay[i] * self.material.pnl)
+            x[i+1] = self.material.beta[i] * self.initial_power / \
+                     (self.material.decay[i] * self.material.pnl)
 
-        return y0
+        return x
+
+        #######################################################################
+
+    def _create_matrix(self, dt, rho):
+
+        # power
+        self._matrix[0,0] = 1.0/dt - (rho - self.material.beta_total) / \
+                            self.material.pnl
+
+        # precursors
+        for i in range(self.material.num_precs):
+
+            # power row
+            self._matrix[0,i+1] = -self.material.decay[i]
+
+            # power column
+            self._matrix[i+1,0] = -self.material.beta[i] / self.material.pnl
+
+            # diagonal
+            self._matrix[i+1,i+1] = 1.0/dt + self.material.decay[i]
+
+        #######################################################################
+
+    def _rhs(self, dt, x):
+
+        # power
+        self._b[0] = x[0] / dt
+
+        # precursors
+        for i in range(self.material.num_precs):
+            self._b[i+1] = x[i+1] / dt
+
     ##
-
-    ###########################################################################
-
-# Function routine
-def _f(time, y, material, reactivity):
-
-    # get reactivity
-    rho = reactivity.interpolate(time)
-
-    # allocate vector
-    f = np.zeros((material.num_precs + 1))
-
-    # calculate power row
-    f[0] = (rho - material.beta_total) / material.pnl * y[0] + \
-           np.sum(material.decay * y[1:material.num_precs+1])
-
-    # calculate precursors
-    for i in range(material.num_precs):
-        f[i+1] = -material.decay[i]*y[i+1] + material.beta[i]*y[0] /\
-                  material.pnl
-
-    return f
-
-    ###########################################################################
-
-# Jacobian routine
-def _jac(time, y, material, reactivity):
-
-    # get reactivity
-    rho = reactivity.interpolate(time)
-
-    # allocate matrix
-    jac = np.zeros((material.num_precs + 1, material.num_precs + 1))
-
-    # set power element
-    jac[0,0] = (rho - material.beta_total) / material.pnl
-
-    # loop around precursors
-    for i in range(material.num_precs):
-
-        # calculate power row
-        jac[0,i+1] = material.decay[i]
-
-        # calculate diagonal
-        jac[i+1,i+1] = -material.decay[i]
-
-        # calculate first column
-        jac[i+1,0] = material.beta[i] / material.pnl
-
-    return jac
