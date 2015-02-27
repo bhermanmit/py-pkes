@@ -23,8 +23,8 @@ print(reactivity)
 # set up solver
 solver = pkes.PKESolver()
 solver.material = mat
-solver.end_time = 1.0
-solver.num_time_steps = 100
+solver.end_time = [1.0]
+solver.num_time_steps = [100]
 solver.reactivity = reactivity
 
 # solve problem

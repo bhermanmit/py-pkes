@@ -2,7 +2,6 @@
 
 # packages
 from __future__ import print_function
-from scipy.integrate import ode
 import numpy as np
 import pkes
 
@@ -19,7 +18,6 @@ class PKESolver(object):
         self._material = None
         self._reactivity = None
         self._end_times = None
-        self._ode = None
         self._power = None
         self._num_time_steps = None
         self._initial_power = 1.0
@@ -136,7 +134,7 @@ class PKESolver(object):
         self.power.add_data_point(0, 0.0, x[0])
 
         # open output file
-        fh = open("output.dat", "w")
+        fh = open("power.dat", "w")
 
         # set up initial time step
         time = 0.0
