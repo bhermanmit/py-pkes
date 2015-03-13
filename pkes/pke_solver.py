@@ -170,8 +170,8 @@ class PKESolver(object):
             self.power.add_data_point(i+1, time, x[0])
 
             # print to screen and write to file
-            fh.write("{0} {1}\n".format(time, x[0]))
-            print("{0} {1}".format(time, x[0]))
+            fh.write("{0} {1} {2}\n".format(time, rho, x[0]))
+            print("{0} {1} {2}".format(time, rho, x[0]))
 
         fh.close()
 
