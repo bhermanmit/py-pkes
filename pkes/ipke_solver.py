@@ -132,7 +132,7 @@ class IPKESolver(object):
             # check coarse time index
             if i == t_cmp:
                 t_idx += 1
-                t_cmp = self.num_time_steps[t_idx]
+                t_cmp += self.num_time_steps[t_idx]
                 dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
 
             # calculate time

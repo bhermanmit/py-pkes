@@ -160,9 +160,9 @@ class DecaySolver(object):
                 power_last = power
 
             # print to screen and write to file
-            fh.write("{0} {1} {2} {3}\n".format(time, power,
+            fh.write("{0} {1} {2} {3}\n".format(time, power_avg,
               self._decay_power["U-235"][i], self._decay_power["U-238"][i]))
-            print("{0} {1} {2} {3}\n".format(time, power,
+            print("{0} {1} {2} {3}".format(time, power_avg,
               self._decay_power["U-235"][i], self._decay_power["U-238"][i]))
 
         fh.close()
