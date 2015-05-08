@@ -7,7 +7,7 @@ import pkes
 
 ###############################################################################
 
-class DecaySolver(object):
+class DecaySolverNew(object):
 
     ###########################################################################
     ## Constructor
@@ -91,15 +91,23 @@ class DecaySolver(object):
         # allocate object
         self._allocate()
 
+        # create temporary array for decay power
+        decay_temp = {}
+        for key in self.decay_power.iterkeys():
+            decay_temp[key] = np.zeros((23, np.sum(self.num_time_steps) + 1))
+
         # open output file
-        fh = open("decay_power.dat", "w")
+        fh = open("decay_power_new.dat", "w")
 
         # set up initial time step
         time = 0.0
         t_idx = 0
         t_cmp = self.num_time_steps[t_idx]
         dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
-        decay_array = np.array((np.sum(self.num_time_steps)))
+
+        # set up last power
+        power_last = self.power.data[0]
+
         # perform integration
         for i in range(np.sum(self.num_time_steps)):
 
@@ -107,57 +115,46 @@ class DecaySolver(object):
             if i == t_cmp:
                 t_idx += 1
                 t_cmp += self.num_time_steps[t_idx]
-                dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
+                dt = (self.end_times[t_idx] - self.end_times[t_idx-1]) / \
+                    float(self.num_time_steps[t_idx])
 
             # calculate time
             time += dt
 
-            # set up time information
-            time_decay = 0.0
-            t_idx_decay = 0
-            t_cmp_decay = self.num_time_steps[t_idx_decay]
-            dt_decay = self.end_times[t_idx_decay] / float(
-                       self.num_time_steps[t_idx_decay])
-
-            # set up last power
-            power_last = self.power.data[0]
-
-            # loop around all previous timesteps
-            for j in range(i + 1):
-
-                # check decay time index
-                if j == t_cmp_decay:
-                    t_idx_decay += 1
-                    t_cmp_decay += self.num_time_steps[t_idx_decay]
-                    dt_decay = self.end_times[t_idx_decay] / float(
-                       self.num_time_steps[t_idx_decay])
-
-                # calculate time for decay
-                time_decay += dt_decay
-
-                # calculate length of time between times
-                t = time - time_decay
-
-                # calculate average power
-                power = self.power.interpolate(time_decay)
-                power_avg = (power + power_last) / 2.0
+            # calculate average power
+            power = self.power.interpolate(time)
+            power_avg = (power + power_last) / 2.0
             
-                # loop around nuclides
-                for key, val in pkes.decay_data.iteritems():
+            # decay to this time
+            for key, val in pkes.decay_data.iteritems():
 
-                    # extract nuclide data
-                    f = val["power_fraction"]
-                    Q = val["energy_per_fission"]
-                    alpha = val["alpha"]
-                    lamb = val["lambda"]
+                # extract decay constants
+                lamb = val["lambda"]
 
-                    # calculate decay power of this nuclide
-                    self._decay_power[key][i] += power_avg*f/Q * \
-                         np.sum(alpha/lamb*(1.0 - np.exp(-lamb*dt_decay)) * \
-                         np.exp(-lamb*t))
-                         
-                # move current power to last power
-                power_last = power
+                # calculate decay multiplier
+                exp = np.exp(-lamb*dt)
+
+                # multiply through all timesteps
+                decay_temp[key] = (decay_temp[key].T*exp).T
+
+            # add in new component
+            for key, val in pkes.decay_data.iteritems():
+
+                # extract nuclide data
+                f = val["power_fraction"]
+                Q = val["energy_per_fission"]
+                alpha = val["alpha"]
+                lamb = val["lambda"]
+
+                # calculate decay power of this nuclide for the current time
+                decay_temp[key][:, i] += alpha/lamb*(1.0 - np.exp(-lamb*dt))
+
+                # calculate actual decay power
+                self._decay_power[key][i] += power_avg*f/Q * \
+                     np.sum(np.sum(decay_temp[key]))
+
+            # move current power to last power
+            power_last = power
 
             # print to screen and write to file
             fh.write("{0} {1} {2} {3}\n".format(time, power_avg,
