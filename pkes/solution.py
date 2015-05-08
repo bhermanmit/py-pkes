@@ -92,6 +92,18 @@ class Solution(object):
 
         #######################################################################
 
+    def exp_interpolate(self, time):
+
+        # check if time is a float
+        if not isinstance(time, float):
+            raise TypeError("Time is not a float for interpolation.")
+
+        # perform interpolation
+        data = np.interp(time, self.time, np.log(self.data))
+        return np.exp(data)
+
+        #######################################################################
+
     def __repr__(self):
 
         the_str = "Solution: size={0}\n\n".format(self._size)

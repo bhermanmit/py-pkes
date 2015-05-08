@@ -117,8 +117,8 @@ class IPKESolver(object):
         # set up initial time step
         time = 0.0
         t_idx = 0
-        t_cmp = self.num_time_steps[t_idx]
-        dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
+        t_cmp = self.num_time_steps[0]
+        dt = self.end_times[0] / float(self.num_time_steps[0])
 
         # set up last power
         power_last = self.power.data[0]
@@ -133,13 +133,14 @@ class IPKESolver(object):
             if i == t_cmp:
                 t_idx += 1
                 t_cmp += self.num_time_steps[t_idx]
-                dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
+                dt = (self.end_times[t_idx] - self.end_times[t_idx-1]) / \
+                    float(self.num_time_steps[t_idx])
 
             # calculate time
             time += dt
 
             # calculate average power
-            power = self.power.interpolate(time)
+            power = self.power.exp_interpolate(time)
             power_avg = (power + power_last) / 2.0
 
             # calculate new precursors
@@ -157,7 +158,7 @@ class IPKESolver(object):
 
             # print to screen and write to file
             fh.write("{0} {1} {2}\n".format(time, rho, power))
-            print("{0} {1} {2}".format(time, rho, power))
+#           print("{0} {1} {2}".format(time, rho, power))
 
             # move current power to last power
             power_last = power

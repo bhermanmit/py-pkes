@@ -105,7 +105,7 @@ class PKESolver(object):
     def set_initial_power(self, initial_power):
 
         # check initial power type
-        if not isinstance(initial_power, int):
+        if not isinstance(initial_power, float):
             raise TypeError("Initial power is not a float.")
 
         # set initial power
@@ -139,8 +139,8 @@ class PKESolver(object):
         # set up initial time step
         time = 0.0
         t_idx = 0
-        t_cmp = self.num_time_steps[t_idx]
-        dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
+        t_cmp = self.num_time_steps[0]
+        dt = self.end_times[0] / float(self.num_time_steps[0])
 
         # perform integration
         for i in range(np.sum(self.num_time_steps)):
@@ -149,7 +149,8 @@ class PKESolver(object):
             if i == t_cmp:
                 t_idx += 1
                 t_cmp += self.num_time_steps[t_idx]
-                dt = self.end_times[t_idx] / float(self.num_time_steps[t_idx])
+                dt = (self.end_times[t_idx] - self.end_times[t_idx-1]) / \
+                    float(self.num_time_steps[t_idx])
 
             # calculate time
             time += dt
