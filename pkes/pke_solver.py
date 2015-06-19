@@ -4,6 +4,7 @@
 from __future__ import print_function
 import numpy as np
 import pkes
+import h5py
 
 ###############################################################################
 
@@ -120,6 +121,7 @@ class PKESolver(object):
     ##
     ##
     def solve(self):
+        print("JERE")
 
         # check object
         self._validate()

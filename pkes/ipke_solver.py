@@ -11,19 +11,19 @@ class IPKESolver(object):
 
     ###########################################################################
     ## Constructor
-    ##
     def __init__(self):
 
         # initialize private class members
         self._material = None
         self._reactivity = None
         self._end_times = None
+        self._power_input = None
         self._power = None
+        self._time = None
         self._num_time_steps = None
 
     ###########################################################################
     ## Properties
-    ##
 
     def get_material(self):
         return self._material
@@ -41,19 +41,33 @@ class IPKESolver(object):
 
         #######################################################################
 
+    def get_power_input(self):
+        return self._power_input
+
+    def set_power_input(self, power_input):
+
+        # check power types
+        if not isinstance(power_input, pkes.Solution):
+            raise TypeError("Power input is not a PKE solution.")
+
+        # set power
+        self._power_input = power_input
+
+    power_input = property(get_power_input, set_power_input)
+
+        #######################################################################
+
     def get_power(self):
         return self._power
 
-    def set_power(self, power):
+    power = property(get_power)
 
-        # check power types
-        if not isinstance(power, pkes.Solution):
-            raise TypeError("Power is not a PKE solution.")
+        #######################################################################
 
-        # set power
-        self._power = power
+    def get_time(self):
+        return self._time
 
-    power = property(get_power, set_power)
+    time = property(get_time)
 
         #######################################################################
 
@@ -94,12 +108,9 @@ class IPKESolver(object):
 
     num_time_steps = property(get_num_time_steps, set_num_time_steps)
 
-    ##
-
     ###########################################################################
     ## Methods
-    ##
-    ##
+
     def solve(self):
 
         # check object
@@ -115,13 +126,13 @@ class IPKESolver(object):
         fh = open("reactivity.dat", "w")
 
         # set up initial time step
-        time = 0.0
+        self.time.add_data_point(0, 0.0)
         t_idx = 0
         t_cmp = self.num_time_steps[0]
         dt = self.end_times[0] / float(self.num_time_steps[0])
 
         # set up last power
-        power_last = self.power.data[0]
+        self.power.add_data_point(0, self.power_input.data[0])
 
         # set initial reactivity as zero
         self.reactivity.add_data_point(0, 0.0, 0.0)
@@ -137,10 +148,13 @@ class IPKESolver(object):
                     float(self.num_time_steps[t_idx])
 
             # calculate time
-            time += dt
+            self.time.add_data_point(i+1, self.time.data[i] + dt)
 
             # calculate average power
-            power = self.power.exp_interpolate(time)
+            self.power.add_data_point(i+1, self.power_input.exp_interpolate(
+                self.time.data[i+1]))
+            power = self.power.data[i+1]
+            power_last = self.power.data[i]
             power_avg = (power + power_last) / 2.0
 
             # calculate new precursors
@@ -158,12 +172,14 @@ class IPKESolver(object):
 
             # print to screen and write to file
             fh.write("{0} {1} {2}\n".format(time, rho, power))
-#           print("{0} {1} {2}".format(time, rho, power))
-
-            # move current power to last power
-            power_last = power
 
         fh.close()
+
+        # write hdf5 data file
+        fh = h5py.File("reactivity.h5")
+        fh["time"] = self.time.data
+        fh["power"] = self.power.data
+        fh["rho"] = self.reactivity.data
 
         #######################################################################
 
@@ -174,8 +190,8 @@ class IPKESolver(object):
             raise ValueError("Material not set in PKESolver.")
 
         # power
-        if self.power is None:
-            raise ValueError("Power not set in PKESolver.")
+        if self.power_input is None:
+            raise ValueError("Power input not set in PKESolver.")
 
         # end time
         if self.end_times is None:
@@ -191,6 +207,8 @@ class IPKESolver(object):
 
         # allocate reactivity vector
         self._reactivity = pkes.Solution(np.sum(self.num_time_steps) + 1)
+        self._power = pkes.Solution(np.sum(self.num_time_steps) + 1)
+        self._time = pkes.Solution(np.sum(self.num_time_steps) + 1)
 
         #######################################################################
 
@@ -201,4 +219,3 @@ class IPKESolver(object):
             (self.material.decay * self.material.pnl)
 
         return C
-    ##

@@ -19,15 +19,15 @@ print(mat)
 # set up power trace
 power = pkes.Solution(4)
 power.add_data_point(0, 0.0,  30.0)
-power.add_data_point(1, 1.0,  30.0)
-power.add_data_point(2, 24.0,  3000.0)
-power.add_data_point(3, 72.0,  3000.0)
+power.add_data_point(1, 1.0*TO_SECONDS,  30.0)
+power.add_data_point(2, 24.0*TO_SECONDS,  3000.0)
+power.add_data_point(3, 72.0*TO_SECONDS,  3000.0)
 print(power)
 
 # set up inverse kinetics solver
 ipke_solver = pkes.IPKESolver()
 ipke_solver.material = mat
-ipke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0])
-ipke_solver.num_time_steps = [10, 1000, 10000, 100, 100]
+ipke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0])*TO_SECONDS
+ipke_solver.num_time_steps = [10, 10000, 3000000, 1000, 1000]
 ipke_solver.power = power
 ipke_solver.solve()
