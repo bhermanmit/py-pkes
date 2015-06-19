@@ -135,7 +135,7 @@ class DecaySolverNew(object):
                 exp = np.exp(-lamb*dt)
 
                 # multiply through all timesteps
-                decay_temp[key] = (decay_temp[key].T*exp).T
+                decay_temp[key][:, 0:i+1] = (decay_temp[key][:, 0:i+1].T*exp).T
 
             # add in new component
             for key, val in pkes.decay_data.iteritems():
