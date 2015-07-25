@@ -28,6 +28,6 @@ print(power)
 ipke_solver = pkes.IPKESolver()
 ipke_solver.material = mat
 ipke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0])*TO_SECONDS
-ipke_solver.num_time_steps = [10, 10000, 3000000, 1000, 1000]
-ipke_solver.power = power
+ipke_solver.num_time_steps = [100000, 100000, 3000000, 3000000, 1000]
+ipke_solver.power_input = power
 ipke_solver.solve()

@@ -16,10 +16,12 @@ for i in range(len(lines)):
     power_pt = float(lines[i].split()[2])
     power.add_data_point(i, time, power_pt)
 
+print("HERE")
+
 # set up solver
 solver = pkes.decay_solver_new.DecaySolverNew()
 solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 1000.0])
-solver.num_time_steps = [10, 10000, 100000, 1000, 1000, 1000, 1000]
+solver.num_time_steps = [100000, 100000, 3000000, 3000000, 10000, 1000000, 100000000]
 solver.power = power
 
 # solve problem

@@ -4,6 +4,7 @@
 from __future__ import print_function
 import pkes
 import numpy as np
+import h5py
 
 TO_SECONDS=86400.0
 
@@ -17,20 +18,20 @@ mat.pnl = 0.0001866
 print(mat)
 
 # get reactivity
-with open("reactivity.dat") as handle:
-    lines = handle.read().splitlines()
-n_lines = len(lines)
-reactivity = pkes.Solution(n_lines)
-for i in range(len(lines)):
-    time = float(lines[i].split()[0])
-    reactivity_pt = float(lines[i].split()[1])
-    reactivity.add_data_point(i, time, reactivity_pt)
+fh = h5py.File("reactivity.h5", "r")
+time = fh["time"].value
+rho = fh["rho"].value
+n_points = len(time) 
+reactivity = pkes.Solution(n_points + 1)
+for i in range(n_points):
+    reactivity.add_data_point(i, time[i], rho[i])
+reactivity.add_data_point(n_points, 72.0*TO_SECONDS + 5.0, -0.0050*np.sum(mat.beta))
 
 # set up point kinetics solver
 pke_solver = pkes.PKESolver()
 pke_solver.material = mat
-pke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 1000.0])
-pke_solver.num_time_steps = [10, 10000, 100000, 1000, 1000, 1000, 1000]
+pke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 1000.0])*TO_SECONDS
+pke_solver.num_time_steps = [100000, 100000, 3000000, 3000000, 10000, 1000000, 100000000]
 pke_solver.reactivity = reactivity
 pke_solver.initial_power = 30.0
 

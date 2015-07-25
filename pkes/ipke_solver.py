@@ -4,6 +4,7 @@
 from __future__ import print_function
 import numpy as np
 import pkes
+import h5py
 
 ###############################################################################
 
@@ -120,19 +121,19 @@ class IPKESolver(object):
         self._allocate()
 
         # calculate initial precursors 
-        C = self._initial_precursors(self.power.data[0])
+        C = self._initial_precursors(self.power_input.data[0])
 
         # open output file
         fh = open("reactivity.dat", "w")
 
         # set up initial time step
-        self.time.add_data_point(0, 0.0)
+        self.time.add_data_point(0, 0.0, 0.0)
         t_idx = 0
         t_cmp = self.num_time_steps[0]
         dt = self.end_times[0] / float(self.num_time_steps[0])
 
         # set up last power
-        self.power.add_data_point(0, self.power_input.data[0])
+        self.power.add_data_point(0, 0.0, self.power_input.data[0])
 
         # set initial reactivity as zero
         self.reactivity.add_data_point(0, 0.0, 0.0)
@@ -148,10 +149,12 @@ class IPKESolver(object):
                     float(self.num_time_steps[t_idx])
 
             # calculate time
-            self.time.add_data_point(i+1, self.time.data[i] + dt)
+            self.time.add_data_point(i+1, self.time.data[i] + dt,
+                                     self.time.data[i] + dt)
 
             # calculate average power
-            self.power.add_data_point(i+1, self.power_input.exp_interpolate(
+            self.power.add_data_point(i+1, self.time.data[i+1],
+                self.power_input.exp_interpolate(
                 self.time.data[i+1]))
             power = self.power.data[i+1]
             power_last = self.power.data[i]
@@ -168,18 +171,19 @@ class IPKESolver(object):
                   np.sum(self.material.decay*C)
 
             # set new reacitivty 
-            self.reactivity.add_data_point(i+1, time, rho)
+            self.reactivity.add_data_point(i+1, self.time.data[i+1], rho)
 
             # print to screen and write to file
-            fh.write("{0} {1} {2}\n".format(time, rho, power))
+            fh.write("{} {} {} {}\n".format(i, self.time.data[i+1]/86400.0, rho, power))
 
         fh.close()
 
         # write hdf5 data file
-        fh = h5py.File("reactivity.h5")
+        fh = h5py.File("reactivity.h5", "w")
         fh["time"] = self.time.data
         fh["power"] = self.power.data
         fh["rho"] = self.reactivity.data
+        fh.close()
 
         #######################################################################
 
