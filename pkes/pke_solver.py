@@ -121,7 +121,6 @@ class PKESolver(object):
     ##
     ##
     def solve(self):
-        print("JERE")
 
         # check object
         self._validate()
@@ -174,8 +173,13 @@ class PKESolver(object):
 
             # print to screen and write to file
             fh.write("{} {} {} {}\n".format(i, time/86400., rho, x[0]))
-#           print("{0} {1} {2}".format(time, rho, x[0]))
 
+        fh.close()
+
+        # write hdf5 data file
+        fh = h5py.File("power.h5", "w")
+        fh["time"] = self.power.time
+        fh["power"] = self.power.data
         fh.close()
 
         #######################################################################
