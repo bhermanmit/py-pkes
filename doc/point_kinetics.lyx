@@ -1,0 +1,1001 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\date{}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\scriptsize Bryan Herman}
+\usepackage{color}
+\usepackage{algorithmic}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\bullet 0 0 0 -1
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\noindent
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100line%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\shape smallcaps
+\size giant
+Point Kinetics w/ Decay Heat
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size largest
+Nuclear Systems I
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size largest
+Bryan Herman
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100line%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Theory
+\end_layout
+
+\begin_layout Subsection*
+Point Kinetics
+\end_layout
+
+\begin_layout Standard
+The standard point kinetics equations (constant kinetics parameters, no
+ external source) solved in the code are listed below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d}{dt}T\left(t\right)=\frac{\rho\left(t\right)-\sum_{i}\beta_{i}}{\Lambda}T\left(t\right)+\sum_{i}\lambda_{i}C_{i}\left(t\right)
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\frac{d}{dt}C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}T\left(t\right)-\lambda_{i}C_{i}\left(t\right).
+\]
+
+\end_inset
+
+Note that this gives us 9 equations, 1 for the power and 8 for the precursors.
+ The steady state relationship between power and precursor can be determined
+ by setting the time derivative in the precursor equation to zero.
+ This yields
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C_{i}^{0}=\frac{\beta_{i}}{\Lambda\lambda_{i}}T^{0}.
+\]
+
+\end_inset
+
+ Setting up a linear system of these 9 equations yields
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d}{dt}\left[N\left(t\right)\right]=\frac{d}{dt}\left[\begin{array}{c}
+T\left(t\right)\\
+C_{1}\left(t\right)\\
+C_{2}\left(t\right)\\
+C_{3}\left(t\right)\\
+C_{4}\left(t\right)\\
+C_{5}\left(t\right)\\
+C_{6}\left(t\right)\\
+C_{7}\left(t\right)\\
+C_{8}\left(t\right)
+\end{array}\right]=\left[\begin{array}{ccccccccc}
+\frac{\rho\left(t\right)-\beta}{\Lambda} & \lambda_{1} & \lambda_{2} & \lambda_{3} & \lambda_{4} & \lambda_{5} & \lambda_{6} & \lambda_{7} & \lambda_{8}\\
+\frac{\beta_{1}}{\Lambda} & -\lambda_{1}\\
+\frac{\beta_{2}}{\Lambda} &  & -\lambda_{2}\\
+\frac{\beta_{3}}{\Lambda} &  &  & -\lambda_{3}\\
+\frac{\beta_{4}}{\Lambda} &  &  &  & -\lambda_{4}\\
+\frac{\beta_{5}}{\Lambda} &  &  &  &  & -\lambda_{5}\\
+\frac{\beta_{6}}{\Lambda} &  &  &  &  &  & -\lambda_{6}\\
+\frac{\beta_{7}}{\Lambda} &  &  &  &  &  &  & -\lambda_{7}\\
+\frac{\beta_{8}}{\Lambda} &  &  &  &  &  &  &  & -\lambda_{8}
+\end{array}\right]\left[N\left(t\right)\right].
+\]
+
+\end_inset
+
+ We can write this simply in matrix notation as 
+\begin_inset Formula 
+\[
+\frac{d}{dt}\left[N\left(t\right)\right]=\left[A\left(t\right)\right]\left[N\left(t\right)\right].
+\]
+
+\end_inset
+
+ In order to solve for 
+\begin_inset Formula $N(t)$
+\end_inset
+
+ numerically, a temporal discretization method must be used.
+ There are many different methods that can be applied.
+ For simplicity, I chose the 1st order backward difference (Implicit Euler)
+ method.
+ It is a fully implicit stable method, but requires fine time steps to capture
+ the physics.
+ Applying this discretization over a small time interval 
+\begin_inset Formula $\left(t^{k}\rightarrow t^{k+1}\right)$
+\end_inset
+
+, we get:
+\begin_inset Formula 
+\[
+\frac{1}{\Delta t^{k}}\left\{ \left[N\left(t^{k+1}\right)\right]-\left[N\left(t^{k}\right)\right]\right\} =\left[A\left(t^{k+1}\right)\right]\left[N\left(t^{k+1}\right)\right],
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Delta t^{k}=t^{k+1}-t^{k}$
+\end_inset
+
+.
+ Solving for 
+\begin_inset Formula $\left[N\left(t^{k+1}\right)\right]$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{\Delta t^{k}}\left[N\left(t^{k+1}\right)\right]=\left[A\left(t^{k+1}\right)\right]\left[N\left(t^{k+1}\right)\right]+\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[N\left(t^{k+1}\right)\right]\left\{ \frac{1}{\Delta t^{k}}\mathbb{I}-\left[A\left(t^{k+1}\right)\right]\Delta t^{k}\right\} =\left[N\left(t^{k}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size tiny
+\begin_inset Formula 
+\[
+\left[N\left(t^{k+1}\right)\right]\underbrace{\left\{ \left[\begin{array}{ccccccccc}
+\frac{1}{\Delta t^{k}}-\frac{\rho\left(t\right)-\beta}{\Lambda} & \lambda_{1} & \lambda_{2} & \lambda_{3} & \lambda_{4} & \lambda_{5} & \lambda_{6} & \lambda_{7} & \lambda_{8}\\
+\frac{\beta_{1}}{\Lambda} & \frac{1}{\Delta t^{k}}-\lambda_{1}\\
+\frac{\beta_{2}}{\Lambda} &  & \frac{1}{\Delta t^{k}}-\lambda_{2}\\
+\frac{\beta_{3}}{\Lambda} &  &  & \frac{1}{\Delta t^{k}}-\lambda_{3}\\
+\frac{\beta_{4}}{\Lambda} &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{4}\\
+\frac{\beta_{5}}{\Lambda} &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{5}\\
+\frac{\beta_{6}}{\Lambda} &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{6}\\
+\frac{\beta_{7}}{\Lambda} &  &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{7}\\
+\frac{\beta_{8}}{\Lambda} &  &  &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{8}
+\end{array}\right]\right\} }_{\left[B\left(t^{k+1}\right)\right]}=\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[N\left(t^{k+1}\right)\right]\left[B\left(t^{k+1}\right)\right]=\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[N\left(t^{k+1}\right)\right]=\left[B\left(t^{k+1}\right)\right]^{-1}\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
+\]
+
+\end_inset
+
+After some manipulation, a simple linear solve can be performed during each
+ timestep.
+\end_layout
+
+\begin_layout Subsection*
+Inverse Point Kinetics
+\end_layout
+
+\begin_layout Standard
+In inverse point kinetics, we start with a known power shape and want to
+ calculate the corresponding reactivity shape.
+ Once we have the reactivity shape, we can put it into the point kinetics
+ equations to get the power.
+ We can start the derivation looking at the precursor balance equation for
+ group 
+\emph on
+i
+\emph default
+,
+\begin_inset Formula 
+\[
+\frac{d}{dt}C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}T\left(t\right)-\lambda C_{i}\left(t\right).
+\]
+
+\end_inset
+
+ Since we know the power dependence the equations are no longer coupled.
+ We can solve this differential equation analytically as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d}{dt}C_{i}\left(t\right)+\lambda C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}T\left(t\right).
+\]
+
+\end_inset
+
+ The integrating factor is 
+\begin_inset Formula $\exp\left(\lambda_{i}t\right)$
+\end_inset
+
+.
+ Going through the analysis we can arrive at:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\exp\left(\lambda_{i}t\right)\frac{d}{dt}C_{i}\left(t\right)+\exp\left(\lambda_{i}t\right)\lambda C_{i}\left(t\right)=\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right),
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\frac{d}{dt}\left[\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)\right]=\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\int\frac{d}{dt}\left[\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)\right]dt=\int\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right)dt,
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}\int\exp\left(\lambda_{i}t\right)T\left(t\right)dt.
+\]
+
+\end_inset
+
+In order to perform that integral on the right hand side the analytic shape
+ of the power amplitude must be known.
+ However, if the time step is small enough we can just pull it out of the
+ integral as a constant and assume it is the average power of the time step.
+ This is shown as
+\begin_inset Formula 
+\[
+\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}\bar{T}\int\exp\left(\lambda_{i}t\right)dt.
+\]
+
+\end_inset
+
+ The general form of the equation is 
+\begin_inset Formula 
+\[
+\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\exp\left(\lambda_{i}t\right)+\tilde{C},
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\tilde{C}\exp\left(\lambda_{i}t\right).
+\]
+
+\end_inset
+
+ The integration constant can be determine since we know from the initial
+ power what the initial precursor concentration is.
+ This constant can be evaluated as
+\begin_inset Formula 
+\[
+C_{i}^{0}=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\tilde{C},
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\tilde{C}=C_{i}^{0}-\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}.
+\]
+
+\end_inset
+
+ Substituting this back in to the general equation yields the final for
+ of the precursor equation,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\left(C_{i}^{0}-\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\right)\exp\left(\lambda_{i}t\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+C_{i}\left(t\right)=C_{i}^{0}\exp\left(\lambda_{i}t\right)+\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\left[1-\exp\left(\lambda_{i}t\right)\right].
+\]
+
+\end_inset
+
+ This will be solved over a time step so that the above approximations are
+ valid.
+ The discretized equation then becomes 
+\begin_inset Formula 
+\[
+C_{i}^{k+1}=C_{i}^{k}\exp\left(\lambda_{i}\Delta t^{k}\right)+\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}^{k}\left[1-\exp\left(\lambda_{i}\Delta t^{k}\right)\right].
+\]
+
+\end_inset
+
+ The power equation solved for reactivity is 
+\begin_inset Formula 
+\[
+\rho\left(t\right)=\frac{\Lambda}{T\left(t\right)}\frac{d}{dt}T\left(t\right)+\beta-\frac{\Lambda}{T\left(t\right)}\sum_{i}\lambda_{i}C_{i}\left(t\right).
+\]
+
+\end_inset
+
+ This can be discretized using a simple backward finite difference for the
+ derivative so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\rho^{k+1}=\frac{\Lambda}{T^{k+1}}\frac{T^{k+1}-T^{k}}{\Delta t^{k}}+\beta-\frac{\Lambda}{T^{k+1}}\sum_{i}\lambda_{i}C_{i}^{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Results
+\end_layout
+
+\begin_layout Standard
+A reactor startup to constant power followed by a SCRAM was simulated.
+ The reactivity was first determine by using inverse point kinetics.
+ Once the reactivity was achieved, the power was recalculated using point
+ kinetics.
+ Following this, the decay heat from fission products was determined.
+ The following nuclear data was used for the inverse and point kinetics
+ equations.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Group
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\beta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda$
+\end_inset
+
+ [1/s]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000218
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.01246668
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.001023
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.02829172
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000605
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.04252437
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.00131
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.13304169
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.00220
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.29246716
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000060
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.66648767
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000540
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.63478109
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000152
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.55460093
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Lambda$
+\end_inset
+
+ [s]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0001866
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Inverse Kinetics
+\end_layout
+
+\begin_layout Standard
+The power shape used to calculate reactivity is:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time (hr)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Power (MWt)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+30
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+30
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+24
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+72
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+Note, between points, a logarithmic interpolation was performed.
+ This will keep the reactivity addition more or less constant during the
+ startup.
+ The plot below shows the input power trace along with the reactivity results
+ as a function of time.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename inverse_kinetics.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Point Kinetics
+\end_layout
+
+\begin_layout Standard
+Using the reactivity from inverse kinetics 
+\end_layout
+
+\end_body
+\end_document
