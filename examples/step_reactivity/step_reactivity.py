@@ -17,16 +17,15 @@ print(mat)
 # set up reactivity trace
 reactivity = pkes.Solution(4)
 reactivity.add_data_point(0, 0.0, 0.0)
-reactivity.add_data_point(1, 0.5, 0.0)
-reactivity.add_data_point(2, 0.51, 0.002)
+reactivity.add_data_point(1, 10.0, 0.0)
+reactivity.add_data_point(2, 10.01, 0.002)
 reactivity.add_data_point(3, 100.0, 0.002)
 print(reactivity)
 
 # set up solver
-solver = pkes.PKESolver()
+solver = pkes.PKEODESolver()
 solver.material = mat
-solver.end_times = [10.0, 90.0]
-solver.num_time_steps = [1000, 900]
+solver.end_time = 100.0
 solver.reactivity = reactivity
 
 # solve problem
