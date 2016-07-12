@@ -21,10 +21,10 @@ reactivity.add_data_point(1, 1.1, 0.0)
 print(reactivity)
 
 # set up solver
-solver = pkes.PKESolver()
+solver = pkes.PKEODESolver()
 solver.material = mat
-solver.end_time = [1.0]
-solver.num_time_steps = [100]
+solver.end_time = 1.0
+solver.max_step = 0.1
 solver.reactivity = reactivity
 
 # solve problem

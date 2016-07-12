@@ -26,6 +26,7 @@ class PKEODESolver(object):
         self._initial_power = 1.0
         self._end_time = None
         self._time = None
+        self._max_step = None
 
     @property
     def material(self):
@@ -91,6 +92,20 @@ class PKEODESolver(object):
         # set end time
         self._end_time = end_time
 
+    @property
+    def max_step(self):
+        return self._max_step
+
+    @max_step.setter
+    def max_step(self, max_step):
+
+        # check max step type
+        if not isinstance(max_step, float):
+            raise TypeError("Max step is not a float.")
+
+        # set end time
+        self._max_step = max_step
+
     def solve(self):
 
         # check object
@@ -107,7 +122,7 @@ class PKEODESolver(object):
         # create ode solver
         ode_solver = ode(create_f, create_jac).set_integrator(
             'vode', method='adams', rtol=1.e-5, atol=1.e-6, first_step=1.e-4,
-            min_step=1.e-5, max_step=1)
+            min_step=1.e-5, max_step=self._max_step)
 
         # set ode parameters and initial value
         ode_solver.set_initial_value(y0, 0.0)
@@ -131,7 +146,8 @@ class PKEODESolver(object):
             
         # plot results
         fig, ax = plt.subplots()
-        ax.plot(self._time, self._power, color='blue', linestyle='solid', marker='o')
+        ax.plot(self._time, self._power, color='blue', linestyle='solid',
+                marker='o', markerfacecolor='red')
         plt.show()
 
     def _validate(self):
@@ -147,6 +163,10 @@ class PKEODESolver(object):
         # end time
         if self.end_time is None:
             raise ValueError("End time not set in PKESolver.")
+
+        # max step
+        if self.max_step is None:
+            raise ValueError("Max step not set in PKESolver.")
 
     def _steady_state(self):
 

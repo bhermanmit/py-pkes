@@ -29,16 +29,16 @@ ipke_solver = pkes.IPKESolver()
 ipke_solver.material = mat
 ipke_solver.end_times = [20.0]
 ipke_solver.num_time_steps = [20000]
-ipke_solver.power = power
+ipke_solver.power_input = power
 
 # solve inverse kinetics
 ipke_solver.solve()
 
 # set up point kinetics solver
-pke_solver = pkes.PKESolver()
+pke_solver = pkes.PKEODESolver()
 pke_solver.material = mat
-pke_solver.end_times = [20.0]
-pke_solver.num_time_steps = [20000]
+pke_solver.end_time = 20.0
+pke_solver.max_step = 1.0
 pke_solver.reactivity = ipke_solver.reactivity
 
 # solve point kinetics

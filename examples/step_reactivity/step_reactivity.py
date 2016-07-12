@@ -26,6 +26,7 @@ print(reactivity)
 solver = pkes.PKEODESolver()
 solver.material = mat
 solver.end_time = 100.0
+solver.max_step = 1.0
 solver.reactivity = reactivity
 
 # solve problem
