@@ -107,7 +107,7 @@ class PKEODESolver(object):
         # create ode solver
         ode_solver = ode(create_f, create_jac).set_integrator(
             'vode', method='adams', rtol=1.e-5, atol=1.e-6, first_step=1.e-4,
-            min_step=1.e-5, max_step=1)
+            min_step=1.e-5, max_step=self.max_step)
 
         # set ode parameters and initial value
         ode_solver.set_initial_value(y0, 0.0)
@@ -121,6 +121,7 @@ class PKEODESolver(object):
             ode_solver.integrate(self.end_time, step=True)
             y.append(ode_solver.y)
             time.append(ode_solver.t)
+            print(time[-1], y[-1][0], time[-1] - time[-2])
 
         # set in output array
         self._time = np.empty((len(time)), dtype=float)

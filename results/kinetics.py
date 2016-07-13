@@ -28,12 +28,12 @@ for i in range(n_points):
 reactivity.add_data_point(n_points, 72.0*TO_SECONDS + 5.0, -0.0050*np.sum(mat.beta))
 
 # set up point kinetics solver
-pke_solver = pkes.PKESolver()
+pke_solver = pkes.PKEODESolver()
 pke_solver.material = mat
-pke_solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 1000.0])*TO_SECONDS
-pke_solver.num_time_steps = [100000, 100000, 3000000, 3000000, 10000, 1000000, 100000000]
+pke_solver.end_time = 1000.0*TO_SECONDS
 pke_solver.reactivity = reactivity
 pke_solver.initial_power = 30.0
+pke_solver.max_step = 1.0*TO_SECONDS
 
 # solve point kinetics
 pke_solver.solve()
