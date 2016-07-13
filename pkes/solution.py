@@ -72,8 +72,14 @@ class Solution(object):
             raise TypeError("Data is not a float.")
 
         # check if index is valid
-        if index < 0 or index >= self.size:
+        if index < 0:
             raise IndexError("Index not in range of solution.")
+            
+        # extend if necessary
+        if index >= self.size:
+            self._time.resize(index+1)
+            self._data.resize(index+1)
+            self._size = index+1
 
         # set parameters
         self._time[index] = time

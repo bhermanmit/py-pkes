@@ -108,11 +108,19 @@ class PKEODESolver(object):
 
     def solve(self):
 
+        self._power = pkes.Solution(1)
+
         # check object
         self._validate()
 
+        # open output file
+        fh = open("power.dat", "w")
+        
         # calculate steady state
         y0 = self._steady_state()
+        fh.write("{} {} {} {}\n".format(
+            0, 0.0, self.reactivity.interpolate(0.0), y0[0]))
+        self.power.add_data_point(0, 0.0, y0[0])
 
         # resolve function handles
         create_f = lambda t, y: self._create_f(self, t, y)
@@ -127,29 +135,26 @@ class PKEODESolver(object):
         # set ode parameters and initial value
         ode_solver.set_initial_value(y0, 0.0)
 
-        # set up output lists
-        time = [0.0]
-        y = [y0]
-
         # integrate to end time
+        i = 1
         while ode_solver.successful() and ode_solver.t < self.end_time:
             ode_solver.integrate(self.end_time, step=True)
-            y.append(ode_solver.y)
-            time.append(ode_solver.t)
-            print(time[-1], y[-1][0], time[-1] - time[-2])
+            self.power.add_data_point(i, ode_solver.t, ode_solver.y[0])
 
-        # set in output array
-        self._time = np.empty((len(time)), dtype=float)
-        self._power = np.empty((len(time)), dtype=float)
-        for i in xrange(len(time)):
-            self._time[i] = time[i]
-            self._power[i] = y[i][0]
-            
-        # plot results
-        fig, ax = plt.subplots()
-        ax.plot(self._time, self._power, color='blue', linestyle='solid',
-                marker='o', markerfacecolor='red')
-        plt.show()
+            # print to screen and write to file
+            fh.write("{} {} {} {}\n".format(
+                i, ode_solver.t, self.reactivity.interpolate(ode_solver.t),
+                ode_solver.y[0]))
+
+            i += 1
+
+        fh.close()
+
+        # write hdf5 data file
+        fh = h5py.File("power.h5", "w")
+        fh["time"] = self.power.time
+        fh["power"] = self.power.data
+        fh.close()
 
     def _validate(self):
 
