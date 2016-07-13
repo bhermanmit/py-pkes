@@ -136,6 +136,7 @@ class PKEODESolver(object):
             ode_solver.integrate(self.end_time, step=True)
             y.append(ode_solver.y)
             time.append(ode_solver.t)
+            print(time[-1], y[-1][0], time[-1] - time[-2])
 
         # set in output array
         self._time = np.empty((len(time)), dtype=float)
