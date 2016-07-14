@@ -30,9 +30,9 @@ reactivity.add_data_point(n_points, 72.0*TO_SECONDS + 5.0, -0.0050*np.sum(mat.be
 # set up point kinetics solver
 pke_solver = pkes.PKEODESolver()
 pke_solver.material = mat
-pke_solver.end_time = 1000.0*TO_SECONDS
+pke_solver.end_time = 72.0*TO_SECONDS
 pke_solver.reactivity = reactivity
-pke_solver.initial_power = 30.0
+pke_solver.initial_power = 1.e-6
 pke_solver.max_step = 1.0*TO_SECONDS
 
 # solve point kinetics
