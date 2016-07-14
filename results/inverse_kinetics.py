@@ -17,11 +17,13 @@ mat.pnl = 0.0001866
 print(mat)
 
 # set up power trace
-power = pkes.Solution(4)
+power = pkes.Solution(6)
 power.add_data_point(0, 0.0,  1.e-6)
 power.add_data_point(1, 1.0*TO_SECONDS,  1.e-6)
 power.add_data_point(2, 24.0*TO_SECONDS,  3000.0)
 power.add_data_point(3, 72.0*TO_SECONDS,  3000.0)
+power.add_data_point(4, 72.01*TO_SECONDS,  1.e-6)
+power.add_data_point(5, 100.0*TO_SECONDS,  1.e-6)
 print(power)
 
 # set up inverse kinetics solver

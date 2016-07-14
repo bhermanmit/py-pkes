@@ -22,15 +22,20 @@ fh = h5py.File("reactivity.h5", "r")
 time = fh["time"].value
 rho = fh["rho"].value
 n_points = len(time) 
-reactivity = pkes.Solution(n_points + 1)
+reactivity = pkes.Solution(n_points + 2)
 for i in range(n_points):
     reactivity.add_data_point(i, time[i], rho[i])
 reactivity.add_data_point(n_points, 72.0*TO_SECONDS + 5.0, -0.0050*np.sum(mat.beta))
+reactivity.add_data_point(n_points+1, 72.0*TO_SECONDS + 100000.0*TO_SECONDS, -0.0050*np.sum(mat.beta))
+print(reactivity._time[-2])
+print(reactivity._data[-2])
+print(reactivity._time[-1])
+print(reactivity._data[-1])
 
 # set up point kinetics solver
 pke_solver = pkes.PKEODESolver()
 pke_solver.material = mat
-pke_solver.end_time = 72.0*TO_SECONDS
+pke_solver.end_time = 100.0*TO_SECONDS
 pke_solver.reactivity = reactivity
 pke_solver.initial_power = 1.e-6
 pke_solver.max_step = 1.0*TO_SECONDS
