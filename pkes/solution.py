@@ -93,6 +93,9 @@ class Solution(object):
         if not isinstance(time, float):
             raise TypeError("Time is not a float for interpolation.")
 
+        if time > self._time[-1]:
+            return 0.0
+
         # perform interpolation
         return np.interp(time, self.time, self.data)
 
@@ -103,6 +106,9 @@ class Solution(object):
         # check if time is a float
         if not isinstance(time, float):
             raise TypeError("Time is not a float for interpolation.")
+
+        if time > self._time[-1]:
+            return 0.0
 
         # perform interpolation
         data = np.interp(time, self.time, np.log(self.data))

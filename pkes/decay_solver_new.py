@@ -94,7 +94,7 @@ class DecaySolverNew(object):
         # create temporary array for decay power
         decay_temp = {}
         for key in self.decay_power.iterkeys():
-            decay_temp[key] = np.zeros((23, np.sum(self.num_time_steps) + 1))
+            decay_temp[key] = np.zeros((23,))
 
         # open output file
         fh = open("decay_power_new.dat", "w")
@@ -109,7 +109,7 @@ class DecaySolverNew(object):
         power_last = self.power.data[0]
 
         # perform integration
-        for i in range(np.sum(self.num_time_steps)):
+        for i in xrange(np.sum(self.num_time_steps)):
 
             # check coarse time index
             if i == t_cmp:
@@ -117,26 +117,15 @@ class DecaySolverNew(object):
                 t_cmp += self.num_time_steps[t_idx]
                 dt = (self.end_times[t_idx] - self.end_times[t_idx-1]) / \
                     float(self.num_time_steps[t_idx])
+                print(self.end_times[t_idx], self.end_times[t_idx-1], self.num_time_steps[t_idx])
 
-            # calculate time
+            # calculate time at midpoint
             time += dt
 
             # calculate average power
             power = self.power.interpolate(time)
             power_avg = (power + power_last) / 2.0
             
-            # decay to this time
-            for key, val in pkes.decay_data.iteritems():
-
-                # extract decay constants
-                lamb = val["lambda"]
-
-                # calculate decay multiplier
-                exp = np.exp(-lamb*dt)
-
-                # multiply through all timesteps
-                decay_temp[key][:, 0:i+1] = (decay_temp[key][:, 0:i+1].T*exp).T
-
             # add in new component
             for key, val in pkes.decay_data.iteritems():
 
@@ -146,21 +135,27 @@ class DecaySolverNew(object):
                 alpha = val["alpha"]
                 lamb = val["lambda"]
 
+                # compute exponential for entire timestep
+                exp = np.exp(-lamb*dt)
+
                 # calculate decay power of this nuclide for the current time
-                decay_temp[key][:, i] += alpha/lamb*(1.0 - np.exp(-lamb*dt))
+                decay_temp[key][:] = alpha/lamb*(1.0 - exp)
 
                 # calculate actual decay power
-                self._decay_power[key][i] += power_avg*f/Q * \
-                     np.sum(np.sum(decay_temp[key]))
+                self._decay_power[key][:, i+1] = power_avg*f/Q*decay_temp[key] + self._decay_power[key][:, i]*exp
 
             # move current power to last power
             power_last = power
 
             # print to screen and write to file
-            fh.write("{0} {1} {2} {3}\n".format(time, power_avg,
-              self._decay_power["U-235"][i], self._decay_power["U-238"][i]))
-            print("{0} {1} {2} {3}".format(time, power_avg,
-              self._decay_power["U-235"][i], self._decay_power["U-238"][i]))
+            fh.write("{0} {1} {2} {3}\n".format(
+              time, power_avg,
+              np.sum(self._decay_power["U-235"][:, i+1]),
+              np.sum(self._decay_power["U-238"][:, i+1])))
+            print("{0} {1} {2} {3}".format(
+              time, power_avg,
+              np.sum(self._decay_power["U-235"][:, i+1]),
+              np.sum(self._decay_power["U-238"][:, i+1])))
 
         fh.close()
 
@@ -186,6 +181,6 @@ class DecaySolverNew(object):
 
         # set up dictionary of decay powers
         for key, val in pkes.decay_data.iteritems():
-            self._decay_power[key] = np.zeros((np.sum(self.num_time_steps)
+            self._decay_power[key] = np.zeros((23, np.sum(self.num_time_steps)
                                                + 1))
     ##
