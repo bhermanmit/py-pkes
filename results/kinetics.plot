@@ -9,6 +9,7 @@ set y2tics autofreq
 set xlabel "Time [s]"
 set ylabel "Power [MW]"
 set y2label "Reactivity [$]"
+set format y "10^{%L}"
 
 set log y
 

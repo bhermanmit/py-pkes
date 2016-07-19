@@ -7,6 +7,7 @@ set xlabel "Time [s]"
 set ylabel "Power [MW]"
 
 set log y
+set format y "10^{%L}"
 
 set yrange [1.e-6:5000e6]
 
