@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \begin_preamble
 \date{}
@@ -18,16 +20,16 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -110,6 +112,10 @@ thispagestyle{empty}
 \end_inset
 
 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -162,10 +168,6 @@ height "1pt"
 \end_layout
 
 \begin_layout Section*
-Theory
-\end_layout
-
-\begin_layout Subsection*
 Point Kinetics
 \end_layout
 
@@ -204,339 +206,14 @@ C_{i}^{0}=\frac{\beta_{i}}{\Lambda\lambda_{i}}T^{0}.
 
 \end_inset
 
- Setting up a linear system of these 9 equations yields
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{d}{dt}\left[N\left(t\right)\right]=\frac{d}{dt}\left[\begin{array}{c}
-T\left(t\right)\\
-C_{1}\left(t\right)\\
-C_{2}\left(t\right)\\
-C_{3}\left(t\right)\\
-C_{4}\left(t\right)\\
-C_{5}\left(t\right)\\
-C_{6}\left(t\right)\\
-C_{7}\left(t\right)\\
-C_{8}\left(t\right)
-\end{array}\right]=\left[\begin{array}{ccccccccc}
-\frac{\rho\left(t\right)-\beta}{\Lambda} & \lambda_{1} & \lambda_{2} & \lambda_{3} & \lambda_{4} & \lambda_{5} & \lambda_{6} & \lambda_{7} & \lambda_{8}\\
-\frac{\beta_{1}}{\Lambda} & -\lambda_{1}\\
-\frac{\beta_{2}}{\Lambda} &  & -\lambda_{2}\\
-\frac{\beta_{3}}{\Lambda} &  &  & -\lambda_{3}\\
-\frac{\beta_{4}}{\Lambda} &  &  &  & -\lambda_{4}\\
-\frac{\beta_{5}}{\Lambda} &  &  &  &  & -\lambda_{5}\\
-\frac{\beta_{6}}{\Lambda} &  &  &  &  &  & -\lambda_{6}\\
-\frac{\beta_{7}}{\Lambda} &  &  &  &  &  &  & -\lambda_{7}\\
-\frac{\beta_{8}}{\Lambda} &  &  &  &  &  &  &  & -\lambda_{8}
-\end{array}\right]\left[N\left(t\right)\right].
-\]
-
-\end_inset
-
- We can write this simply in matrix notation as 
-\begin_inset Formula 
-\[
-\frac{d}{dt}\left[N\left(t\right)\right]=\left[A\left(t\right)\right]\left[N\left(t\right)\right].
-\]
-
-\end_inset
-
- In order to solve for 
-\begin_inset Formula $N(t)$
-\end_inset
-
- numerically, a temporal discretization method must be used.
- There are many different methods that can be applied.
- For simplicity, I chose the 1st order backward difference (Implicit Euler)
- method.
- It is a fully implicit stable method, but requires fine time steps to capture
- the physics.
- Applying this discretization over a small time interval 
-\begin_inset Formula $\left(t^{k}\rightarrow t^{k+1}\right)$
-\end_inset
-
-, we get:
-\begin_inset Formula 
-\[
-\frac{1}{\Delta t^{k}}\left\{ \left[N\left(t^{k+1}\right)\right]-\left[N\left(t^{k}\right)\right]\right\} =\left[A\left(t^{k+1}\right)\right]\left[N\left(t^{k+1}\right)\right],
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $\Delta t^{k}=t^{k+1}-t^{k}$
-\end_inset
-
-.
- Solving for 
-\begin_inset Formula $\left[N\left(t^{k+1}\right)\right]$
-\end_inset
-
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{1}{\Delta t^{k}}\left[N\left(t^{k+1}\right)\right]=\left[A\left(t^{k+1}\right)\right]\left[N\left(t^{k+1}\right)\right]+\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left[N\left(t^{k+1}\right)\right]\left\{ \frac{1}{\Delta t^{k}}\mathbb{I}-\left[A\left(t^{k+1}\right)\right]\Delta t^{k}\right\} =\left[N\left(t^{k}\right)\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\size tiny
-\begin_inset Formula 
-\[
-\left[N\left(t^{k+1}\right)\right]\underbrace{\left\{ \left[\begin{array}{ccccccccc}
-\frac{1}{\Delta t^{k}}-\frac{\rho\left(t\right)-\beta}{\Lambda} & \lambda_{1} & \lambda_{2} & \lambda_{3} & \lambda_{4} & \lambda_{5} & \lambda_{6} & \lambda_{7} & \lambda_{8}\\
-\frac{\beta_{1}}{\Lambda} & \frac{1}{\Delta t^{k}}-\lambda_{1}\\
-\frac{\beta_{2}}{\Lambda} &  & \frac{1}{\Delta t^{k}}-\lambda_{2}\\
-\frac{\beta_{3}}{\Lambda} &  &  & \frac{1}{\Delta t^{k}}-\lambda_{3}\\
-\frac{\beta_{4}}{\Lambda} &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{4}\\
-\frac{\beta_{5}}{\Lambda} &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{5}\\
-\frac{\beta_{6}}{\Lambda} &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{6}\\
-\frac{\beta_{7}}{\Lambda} &  &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{7}\\
-\frac{\beta_{8}}{\Lambda} &  &  &  &  &  &  &  & \frac{1}{\Delta t^{k}}-\lambda_{8}
-\end{array}\right]\right\} }_{\left[B\left(t^{k+1}\right)\right]}=\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left[N\left(t^{k+1}\right)\right]\left[B\left(t^{k+1}\right)\right]=\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left[N\left(t^{k+1}\right)\right]=\left[B\left(t^{k+1}\right)\right]^{-1}\frac{1}{\Delta t^{k}}\left[N\left(t^{k}\right)\right]
-\]
-
-\end_inset
-
-After some manipulation, a simple linear solve can be performed during each
- timestep.
-\end_layout
-
-\begin_layout Subsection*
-Inverse Point Kinetics
-\end_layout
-
-\begin_layout Standard
-In inverse point kinetics, we start with a known power shape and want to
- calculate the corresponding reactivity shape.
- Once we have the reactivity shape, we can put it into the point kinetics
- equations to get the power.
- We can start the derivation looking at the precursor balance equation for
- group 
-\emph on
-i
-\emph default
-,
-\begin_inset Formula 
-\[
-\frac{d}{dt}C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}T\left(t\right)-\lambda C_{i}\left(t\right).
-\]
-
-\end_inset
-
- Since we know the power dependence the equations are no longer coupled.
- We can solve this differential equation analytically as
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{d}{dt}C_{i}\left(t\right)+\lambda C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}T\left(t\right).
-\]
-
-\end_inset
-
- The integrating factor is 
-\begin_inset Formula $\exp\left(\lambda_{i}t\right)$
-\end_inset
-
-.
- Going through the analysis we can arrive at:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\exp\left(\lambda_{i}t\right)\frac{d}{dt}C_{i}\left(t\right)+\exp\left(\lambda_{i}t\right)\lambda C_{i}\left(t\right)=\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right),
-\]
-
-\end_inset
-
- 
-\begin_inset Formula 
-\[
-\frac{d}{dt}\left[\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)\right]=\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right),
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-\int\frac{d}{dt}\left[\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)\right]dt=\int\exp\left(\lambda_{i}t\right)\frac{\beta_{i}}{\Lambda}T\left(t\right)dt,
-\]
-
-\end_inset
-
- 
-\begin_inset Formula 
-\[
-\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}\int\exp\left(\lambda_{i}t\right)T\left(t\right)dt.
-\]
-
-\end_inset
-
-In order to perform that integral on the right hand side the analytic shape
- of the power amplitude must be known.
- However, if the time step is small enough we can just pull it out of the
- integral as a constant and assume it is the average power of the time step.
- This is shown as
-\begin_inset Formula 
-\[
-\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\Lambda}\bar{T}\int\exp\left(\lambda_{i}t\right)dt.
-\]
-
-\end_inset
-
- The general form of the equation is 
-\begin_inset Formula 
-\[
-\exp\left(\lambda_{i}t\right)C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\exp\left(\lambda_{i}t\right)+\tilde{C},
-\]
-
-\end_inset
-
- 
-\begin_inset Formula 
-\[
-C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\tilde{C}\exp\left(\lambda_{i}t\right).
-\]
-
-\end_inset
-
- The integration constant can be determine since we know from the initial
- power what the initial precursor concentration is.
- This constant can be evaluated as
-\begin_inset Formula 
-\[
-C_{i}^{0}=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\tilde{C},
-\]
-
-\end_inset
-
- 
-\begin_inset Formula 
-\[
-\tilde{C}=C_{i}^{0}-\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}.
-\]
-
-\end_inset
-
- Substituting this back in to the general equation yields the final for
- of the precursor equation,
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-C_{i}\left(t\right)=\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}+\left(C_{i}^{0}-\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\right)\exp\left(\lambda_{i}t\right),
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-C_{i}\left(t\right)=C_{i}^{0}\exp\left(\lambda_{i}t\right)+\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}\left[1-\exp\left(\lambda_{i}t\right)\right].
-\]
-
-\end_inset
-
- This will be solved over a time step so that the above approximations are
- valid.
- The discretized equation then becomes 
-\begin_inset Formula 
-\[
-C_{i}^{k+1}=C_{i}^{k}\exp\left(\lambda_{i}\Delta t^{k}\right)+\frac{\beta_{i}}{\lambda_{i}\Lambda}\bar{T}^{k}\left[1-\exp\left(\lambda_{i}\Delta t^{k}\right)\right].
-\]
-
-\end_inset
-
- The power equation solved for reactivity is 
-\begin_inset Formula 
-\[
-\rho\left(t\right)=\frac{\Lambda}{T\left(t\right)}\frac{d}{dt}T\left(t\right)+\beta-\frac{\Lambda}{T\left(t\right)}\sum_{i}\lambda_{i}C_{i}\left(t\right).
-\]
-
-\end_inset
-
- This can be discretized using a simple backward finite difference for the
- derivative so that
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\rho^{k+1}=\frac{\Lambda}{T^{k+1}}\frac{T^{k+1}-T^{k}}{\Delta t^{k}}+\beta-\frac{\Lambda}{T^{k+1}}\sum_{i}\lambda_{i}C_{i}^{k}.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section*
-Results
-\end_layout
-
-\begin_layout Standard
-A reactor startup to constant power followed by a SCRAM was simulated.
- The reactivity was first determine by using inverse point kinetics.
- Once the reactivity was achieved, the power was recalculated using point
- kinetics.
- Following this, the decay heat from fission products was determined.
- The following nuclear data was used for the inverse and point kinetics
- equations.
+ The data used for these equations is listed below:
 \end_layout
 
 \begin_layout Standard
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -545,7 +222,7 @@ A reactor startup to constant power followed by a SCRAM was simulated.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Group
+Precursor Group
 \end_layout
 
 \end_inset
@@ -554,10 +231,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\beta$
-\end_inset
-
-
+Half-life [s]
 \end_layout
 
 \end_inset
@@ -566,10 +240,11 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\lambda$
+Delayed Neutron Fraction, 
+\begin_inset Formula $\beta_{i}$
 \end_inset
 
- [1/s]
+
 \end_layout
 
 \end_inset
@@ -589,7 +264,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.000218
+55.6
 \end_layout
 
 \end_inset
@@ -598,7 +273,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.01246668
+0.000218
 \end_layout
 
 \end_inset
@@ -618,7 +293,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.001023
+24.5
 \end_layout
 
 \end_inset
@@ -627,7 +302,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.02829172
+0.001023
 \end_layout
 
 \end_inset
@@ -647,7 +322,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.000605
+16.3
 \end_layout
 
 \end_inset
@@ -656,7 +331,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.04252437
+0.000605
 \end_layout
 
 \end_inset
@@ -676,7 +351,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.00131
+5.21
 \end_layout
 
 \end_inset
@@ -685,7 +360,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.13304169
+0.00131
 \end_layout
 
 \end_inset
@@ -705,7 +380,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.00220
+2.37
 \end_layout
 
 \end_inset
@@ -714,7 +389,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.29246716
+0.00220
 \end_layout
 
 \end_inset
@@ -734,7 +409,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.000060
+1.04
 \end_layout
 
 \end_inset
@@ -743,7 +418,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.66648767
+0.000060
 \end_layout
 
 \end_inset
@@ -763,7 +438,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.000540
+0.424
 \end_layout
 
 \end_inset
@@ -772,7 +447,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.63478109
+0.000540
 \end_layout
 
 \end_inset
@@ -792,7 +467,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.000152
+0.195
 \end_layout
 
 \end_inset
@@ -801,7 +476,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-3.55460093
+0.000152
 \end_layout
 
 \end_inset
@@ -812,10 +487,7 @@ Group
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\Lambda$
-\end_inset
-
- [s]
+Prompt Neutron Lifetime [s]
 \end_layout
 
 \end_inset
@@ -846,155 +518,204 @@ Group
 
 \end_layout
 
-\begin_layout Subsection*
-Inverse Kinetics
-\end_layout
-
 \begin_layout Standard
-The power shape used to calculate reactivity is:
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Time (hr)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Power (MWt)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-24
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3000
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-72
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3000
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
+\begin_inset VSpace medskip
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\begin_inset VSpace bigskip
-\end_inset
-
-Note, between points, a logarithmic interpolation was performed.
- This will keep the reactivity addition more or less constant during the
- startup.
- The plot below shows the input power trace along with the reactivity results
- as a function of time.
+To solve these coupled ODEs, the VODE solver in Python/SciPy was used.
+ The reactivity trace used in the above equations was chosen such that a
+ linear ramp from 1.e-6 MW to 3000 MW is calculated over the first 24 hours
+ and then held constant for another 48 hours.
+ The reactor was shutdown at 72 hours.
+ Below is a plot of the power and reactivity traces.
+ The power trace will be used to determine decay heat power.
 \end_layout
 
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename inverse_kinetics.pdf
+	filename /home/bherman/Documents/repos/py-pkes/results/kinetics.pdf
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection*
-Point Kinetics
+\begin_layout Section*
+Decay Heat
 \end_layout
 
 \begin_layout Standard
-Using the reactivity from inverse kinetics 
+The following decay heat derivation is based off of U.S.
+ NRC document NUREG/CR-6999, 
+\begin_inset Quotes eld
+\end_inset
+
+Technical Basis for a Proposed Expansion of Regulatory Guide 3.54— Decay
+ Heat Generation in an Independent Spent Fuel Storage Installation
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The derivation is as follows:
+\end_layout
+
+\begin_layout Itemize
+Decay heat power after a single fission event from fissionable isotope 
+\emph on
+i
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{i}(t)=\sum_{j=1}^{23}\alpha_{ij}e^{-\lambda_{ij}t}\qquad[{\rm MeV/s/fission}]
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $t$
+\end_inset
+
+ is time after fission and 
+\begin_inset Formula $\alpha_{ij}$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda_{ij}$
+\end_inset
+
+ are constants listed after the derivation.
+ We begin by splitting up the time 
+\begin_inset Formula $t$
+\end_inset
+
+ into the time during operation denoted with 
+\begin_inset Formula $t^{\prime}$
+\end_inset
+
+ and time after operation as 
+\begin_inset Formula $t$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{i}(t,t^{\prime})=\sum_{j=1}^{23}\alpha_{ij}e^{-\lambda_{ij}(t^{\prime}+t)}\qquad[{\rm MeV/s/fission}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{i}(t,t^{\prime})=\sum_{j=1}^{23}\alpha_{ij}e^{-\lambda_{ij}t^{\prime}}e^{-\lambda_{ij}t}\qquad[{\rm MeV/s/fission}]
+\]
+
+\end_inset
+
+ Now we integrate over the reactor operating time (
+\begin_inset Formula $T$
+\end_inset
+
+): 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F_{i}(t,T)=\int_{0}^{T}f_{i}(t,t^{\prime})dt^{\prime}=\sum_{j=1}^{23}\alpha_{ij}e^{-\lambda_{ij}t}\int_{0}^{T}e^{-\lambda_{ij}t^{\prime}}dt^{\prime}
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+F_{i}(t,T)=\sum_{j=1}^{23}\frac{\alpha_{ij}}{\lambda_{ij}}\left[1-e^{-\lambda_{ij}T}\right]e^{-\lambda_{ij}t}\qquad[{\rm MeV/fission}]
+\]
+
+\end_inset
+
+ So for 1 constant power interval denoted by 
+\begin_inset Formula $k$
+\end_inset
+
+, for all fission able isotopes, the following formula is written:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P_{Fk}(t,T)=\sum_{i}\frac{\chi_{i}P_{Rk}}{Q_{i}}\sum_{j=1}^{23}\frac{\alpha_{ij}}{\lambda_{ij}}\left[1-e^{-\lambda_{ij}T}\right]e^{-\lambda_{ij}t}
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $\chi_{i}$
+\end_inset
+
+ is the power fraction for fissionable isotope 
+\begin_inset Formula $i$
+\end_inset
+
+, 
+\begin_inset Formula $P_{Rk}$
+\end_inset
+
+ is the reactor power during interval 
+\begin_inset Formula $k$
+\end_inset
+
+ and 
+\begin_inset Formula $Q_{i}$
+\end_inset
+
+ is the average energy per fission of fissionable isotope 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ For all 
+\begin_inset Formula $k$
+\end_inset
+
+ intervals:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P_{F}(t,T)=\sum_{k}\sum_{i}\frac{\chi_{i}P_{Rk}}{Q_{i}}\sum_{j=1}^{23}\frac{\alpha_{ij}}{\lambda_{ij}}\left[1-e^{-\lambda_{ij}T}\right]e^{-\lambda_{ij}t}
+\]
+
+\end_inset
+
+ Solving this equation for the power trace above we get the following plot.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/bherman/Documents/repos/py-pkes/results/all.pdf
+
+\end_inset
+
+
 \end_layout
 
 \end_body
