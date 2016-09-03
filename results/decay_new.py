@@ -20,10 +20,8 @@ for i in range(len(lines)):
 
 # set up solver
 solver = pkes.decay_solver_new.DecaySolverNew()
-#solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 1000.0])
-#solver.num_time_steps = [100000, 100000, 3000000, 3000000, 10000, 1000000, 100000000]
-solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0]) * TO_SECONDS
-solver.num_time_steps = [1000, 1000, 3000, 3000, 10000, 10000]
+solver.end_times = np.asarray([1.0, 2.0, 23.0, 25.0, 72.0, 100.0, 720.0, 1000.0]) * TO_SECONDS
+solver.num_time_steps = [1000, 1000, 3000, 3000, 10000, 10000, 10000, 10000]
 solver.power = power
 
 # solve problem
