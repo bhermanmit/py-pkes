@@ -18,7 +18,7 @@ class DecaySolverNew(object):
         self._end_times = None
         self._power = None
         self._num_time_steps = None
-        self._decay_power = {} 
+        self._decay_power = {}
 
     ###########################################################################
     ## Properties
@@ -125,7 +125,7 @@ class DecaySolverNew(object):
             # calculate average power
             power = self.power.interpolate(time)
             power_avg = (power + power_last) / 2.0
-            
+
             # add in new component
             for key, val in pkes.decay_data.iteritems():
 
@@ -148,14 +148,18 @@ class DecaySolverNew(object):
             power_last = power
 
             # print to screen and write to file
-            fh.write("{0} {1} {2} {3}\n".format(
+            fh.write("{0} {1} {2} {3} {4} {5}\n".format(
               time, power_avg,
               np.sum(self._decay_power["U-235"][:, i+1]),
-              np.sum(self._decay_power["U-238"][:, i+1])))
-            print("{0} {1} {2} {3}".format(
+              np.sum(self._decay_power["U-238"][:, i+1]),
+              np.sum(self._decay_power["Pu-239"][:, i+1]),
+              np.sum(self._decay_power["Pu-241"][:, i+1])))
+            print("{0} {1} {2} {3} {4} {5}".format(
               time, power_avg,
               np.sum(self._decay_power["U-235"][:, i+1]),
-              np.sum(self._decay_power["U-238"][:, i+1])))
+              np.sum(self._decay_power["U-238"][:, i+1]),
+              np.sum(self._decay_power["Pu-239"][:, i+1]),
+              np.sum(self._decay_power["Pu-241"][:, i+1])))
 
         fh.close()
 
